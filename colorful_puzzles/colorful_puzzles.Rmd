@@ -1,0 +1,49 @@
+---
+title: "Colorful Puzzles"
+author: "Jacob Fiksel"
+date: "4/28/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE)
+```
+
+I will solve this problem by simulation. I will assume that a turn counts as round where you draw the first ball, and then the second to paint that ball to be the same color as the first. I will first write a function that plays this game once and returns the number of turns it takes.
+
+```{r}
+play_game <- function() {
+    n.turns <- 0
+    balls <- c("red", "blue", "green", "yellow")
+    while(length(unique(balls)) > 1){
+        possible.balls <- 1:4
+        ball.samples <- sample(possible.balls, 2, replace = FALSE)
+        balls[ball.samples[2]] <- balls[ball.samples[1]]
+        n.turns <- n.turns + 1
+    }
+    return(n.turns)
+}
+```
+
+And now we can play the game 100,000 times, keeping track of the number of turns it takes to complete each game. I set a seed so that we get consistent results each time we do this simulation.
+
+```{r}
+n <- 100000
+results <- rep(0, n)
+set.seed(4282017)
+for(i in 1:n){
+    results[i] <- play_game()
+}
+```
+
+We can then take the mean of the number of times it took to complete each game, which should be approximately the expected number of turns it takes to finish a game
+
+```{r}
+mean(results)
+```
+
+We see that the expected value is about `r round(mean(results), 1)` times! We can also easily visualize the distribution of the number of times it takes to complete each game.
+
+```{r}
+hist(results, breaks = 100)
+```
