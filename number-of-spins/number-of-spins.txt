@@ -1,0 +1,18 @@
+model {
+    # Model the marginal distributions because JAGS doesn't support multivariate 
+    # Observed and unobserved notes
+    for(i in 1:6) {
+        num_freq_obs[i] ~ dbin(p[i], nspins)
+    }
+    n_4 ~ dbin(p[7], nspins)
+    n_5 ~ dbin(p[8], nspins)
+    ### Total number of spins
+    nspins = nspins_known + num_4_5 
+    ### Dirichlet prior on p (mean of 1/8, scaled)
+    p[1:8] ~ ddirch(rep(delta, 8))
+    ### Poisson distribution with mean of 40 on number of spins between 4 & 5
+    num_4_5 ~ dpois(40)
+    pordered[1:3] = p[1:3]
+    pordered[4:5] = p[7:8]
+    pordered[6:8] = p[4:6]
+}
